@@ -22,20 +22,6 @@ val validPokemonListResponse = """
     }
 """.trimIndent()
 
-val nextPageValidPokemonListResponse = """
-   {
-       "count":1302,
-       "next":"https://pokeapi.co/api/v2/pokemon?offset=40&limit=20",
-       "previous":null,
-       "results":[
-          {
-             "name":"charmander",
-             "url":"https://pokeapi.co/api/v2/pokemon/4/"
-          }
-       ]
-    }
-""".trimIndent()
-
 val validFightingPokemonListResponse = """
     {
        "id":2,
