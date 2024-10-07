@@ -47,18 +47,18 @@ class PokemonPagingDataSourceTest{
     @Test
     fun `load - when load returns pokemon list - should return Data`() = runTest {
         // Given
-        val mockedResults = listOf(
+        val mockedPokeItemsDto = listOf(
             PokemonItemDto(name = "bulbasaur", url = "https://pokeapi.co/api/v2/pokemon/1/"),
             PokemonItemDto(name = "ivysaur", url = "https://pokeapi.co/api/v2/pokemon/2/"),
             PokemonItemDto(name = "venusaur", url = "https://pokeapi.co/api/v2/pokemon/3/"),
         )
-        val pokeTypesResponse = PokemonEntryDto(
+        val pokeEntryDtoResponse = PokemonEntryDto(
             count = 1302,
             nextPage = "https://pokeapi.co/api/v2/pokemon?offset=20&limit=20",
             previousPage = null,
-            pokemonTypeList = mockedResults
+            pokemonTypeList = mockedPokeItemsDto
         )
-        coEvery { apiService.getPokemonList(any()) }.returns(pokeTypesResponse)
+        coEvery { apiService.getPokemonList(any()) }.returns(pokeEntryDtoResponse)
         // When
 
         val result = pokeDataSource.load(
@@ -72,7 +72,7 @@ class PokemonPagingDataSourceTest{
         // Then
         assertThat(result).isEqualTo(
             PagingSource.LoadResult.Page(
-                data = pokeTypesResponse.pokemonTypeList.map { it.toPokemonItem() },
+                data = pokeEntryDtoResponse.pokemonTypeList.map { it.toPokemonItem() },
                 prevKey = null,
                 nextKey = 1
             )
@@ -82,16 +82,16 @@ class PokemonPagingDataSourceTest{
     @Test
     fun `load - when is append success - should return Data`() = runTest {
         // Given
-        val mockedResults = listOf(
+        val mockedPokeItemsDto = listOf(
             PokemonItemDto(name = "charmander", url = "https://pokeapi.co/api/v2/pokemon/4/"),
         )
-        val pokeTypesResponse = PokemonEntryDto(
+        val pokeEntryDtoResponse = PokemonEntryDto(
             count = 1302,
             nextPage = "https://pokeapi.co/api/v2/pokemon?offset=60&limit=20",
             previousPage = "https://pokeapi.co/api/v2/pokemon?offset=40&limit=20",
-            pokemonTypeList = mockedResults
+            pokemonTypeList = mockedPokeItemsDto
         )
-        coEvery { apiService.getPokemonList(any()) }.returns(pokeTypesResponse)
+        coEvery { apiService.getPokemonList(any()) }.returns(pokeEntryDtoResponse)
         // When
         val result = pokeDataSource.load(
             PagingSource.LoadParams.Append(
@@ -104,7 +104,7 @@ class PokemonPagingDataSourceTest{
         // Then
         assertThat(result).isEqualTo(
             PagingSource.LoadResult.Page(
-                data = pokeTypesResponse.pokemonTypeList.map { it.toPokemonItem() },
+                data = pokeEntryDtoResponse.pokemonTypeList.map { it.toPokemonItem() },
                 prevKey = null,
                 nextKey = 2
             )
@@ -118,7 +118,7 @@ class PokemonPagingDataSourceTest{
             searchText = "fighting",
             api = apiService
         )
-        val mockedResults = listOf(
+        val mockedPokeDataDto = listOf(
             PokemonDataDto(
                 pokemon = PokemonItemDto(
                     name = "mankey",
@@ -132,10 +132,10 @@ class PokemonPagingDataSourceTest{
                 )
             ),
         )
-        val pokeTypesResponse = PokemonListDataDto(
-            pokemonList = mockedResults
+        val pokeListDataDtoResponse = PokemonListDataDto(
+            pokemonList = mockedPokeDataDto
         )
-        coEvery { apiService.getPokemonTypes("fighting",any()) }.returns(pokeTypesResponse)
+        coEvery { apiService.getPokemonTypes("fighting",any()) }.returns(pokeListDataDtoResponse)
         // When
         val result = pokeDataSource.load(
             PagingSource.LoadParams.Refresh(
@@ -148,7 +148,7 @@ class PokemonPagingDataSourceTest{
         // Then
         assertThat(result).isEqualTo(
             PagingSource.LoadResult.Page(
-                data = pokeTypesResponse.pokemonList.map { it.pokemon.toPokemonItem() },
+                data = pokeListDataDtoResponse.pokemonList.map { it.pokemon.toPokemonItem() },
                 prevKey = null,
                 nextKey = null
             )
@@ -187,16 +187,16 @@ class PokemonPagingDataSourceTest{
             searchText = null,
             api = getApiService()
         )
-        val mockedResults = listOf(
+        val mockedPokeItemsDto = listOf(
             PokemonItemDto(name = "bulbasaur", url = "https://pokeapi.co/api/v2/pokemon/1/"),
             PokemonItemDto(name = "ivysaur", url = "https://pokeapi.co/api/v2/pokemon/2/"),
             PokemonItemDto(name = "venusaur", url = "https://pokeapi.co/api/v2/pokemon/3/"),
         )
-        val pokeTypesResponse = PokemonEntryDto(
+        val pokeEntryDtoResponse = PokemonEntryDto(
             count = 1302,
             nextPage = "https://pokeapi.co/api/v2/pokemon?offset=20&limit=20",
             previousPage = null,
-            pokemonTypeList = mockedResults
+            pokemonTypeList = mockedPokeItemsDto
         )
         mockWebServer.enqueue(
             MockResponse()
@@ -216,7 +216,7 @@ class PokemonPagingDataSourceTest{
         // Then
         assertThat(result).isEqualTo(
             PagingSource.LoadResult.Page(
-                data = pokeTypesResponse.pokemonTypeList.map { it.toPokemonItem() },
+                data = pokeEntryDtoResponse.pokemonTypeList.map { it.toPokemonItem() },
                 prevKey = null,
                 nextKey = 1
             )
@@ -230,7 +230,7 @@ class PokemonPagingDataSourceTest{
             searchText = "fighting",
             api = getApiService()
         )
-        val mockedResults = listOf(
+        val mockedPokeDataDto = listOf(
             PokemonDataDto(
                 pokemon = PokemonItemDto(
                     name = "mankey",
@@ -244,8 +244,8 @@ class PokemonPagingDataSourceTest{
                 )
             ),
         )
-        val pokeTypesResponse = PokemonListDataDto(
-            pokemonList = mockedResults
+        val pokeListDataDtoResponse = PokemonListDataDto(
+            pokemonList = mockedPokeDataDto
         )
 
         mockWebServer.enqueue(
@@ -265,7 +265,7 @@ class PokemonPagingDataSourceTest{
         // Then
         assertThat(result).isEqualTo(
             PagingSource.LoadResult.Page(
-                data = pokeTypesResponse.pokemonList.map { it.pokemon.toPokemonItem() },
+                data = pokeListDataDtoResponse.pokemonList.map { it.pokemon.toPokemonItem() },
                 prevKey = null,
                 nextKey = null
             )

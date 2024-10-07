@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.example.pokapisample.data.repository.PokemonRepositoryImpl
+import com.example.pokapisample.domain.PokemonRepository
 import com.example.pokapisample.domain.PokemonItem
 import com.example.pokapisample.util.IoDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PokemonListViewModel @Inject constructor(
-    private val pokeRepositoryImpl: PokemonRepositoryImpl,
+    private val pokemonRepository: PokemonRepository,
     @IoDispatcher private val ioDispatchers: CoroutineDispatcher,
 ) : ViewModel() {
 
@@ -28,7 +28,7 @@ class PokemonListViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     fun getPokeList(searchText: String?) = viewModelScope.launch(ioDispatchers) {
-        pokeRepositoryImpl.getPokeList(searchText)
+        pokemonRepository.getPokeList(searchText)
             .distinctUntilChanged()
             .cachedIn(viewModelScope).collect {
                 _uiState.value = it

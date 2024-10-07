@@ -20,7 +20,7 @@ class PokemonListViewModelTest: BaseCoroutineTest(){
     @Before
     fun setUp() {
         pokemonViewModel = PokemonListViewModel(
-            pokeRepositoryImpl = pokeRepositoryImpl,
+            pokemonRepository = pokeRepositoryImpl,
             ioDispatchers = testDispatcher
         )
     }
@@ -44,7 +44,7 @@ class PokemonListViewModelTest: BaseCoroutineTest(){
     @Test
     fun `getPokeList - should return data`() = runTest {
         // Given
-        val mockedResults = listOf(
+        val mockedPokeItems = listOf(
             PokemonItem(
                 id = 1,
                 name = "bulbasaur",
@@ -65,7 +65,7 @@ class PokemonListViewModelTest: BaseCoroutineTest(){
             ),
         )
         val pagingData = PagingData.from(
-            data = mockedResults
+            data = mockedPokeItems
         )
         val flowPagingData = flow { emit(pagingData) }
 
@@ -76,7 +76,7 @@ class PokemonListViewModelTest: BaseCoroutineTest(){
 
         // Then
         scheduler.advanceUntilIdle()
-        //Difficulty on comparing 2 paging data
+        //Issue: This assert will fail due to difficulty on comparing 2 paging data. should try to call asSnapshot()
         assertThat(pokemonViewModel.uiState.value).isEqualTo(pagingData)
     }
 }
